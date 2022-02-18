@@ -1,5 +1,5 @@
 # read in data
-gold <- read.csv("gold.csv")
+gold <- read.csv("gold_raw.csv")
 # for (i in 1:length(gold$Value)){
 #   if (is.nan(gold[i,2])){
 #     gold[i,2] = NA
@@ -35,9 +35,9 @@ gold <- data.frame(gold, exp_value, sd)
 
 # read in data
 bitcoin <- read.csv("bitcoin.csv")
-# for (i in 1:length(gold$Value)){
-#   if (is.nan(gold[i,2])){
-#     gold[i,2] = NA
+# for (i in 1:length(bitcoin$Value)){
+#   if (is.nan(bitcoin[i,2])){
+#     bitcoin[i,2] = NA
 #   }
 # }
 
@@ -45,9 +45,9 @@ bitcoin <- read.csv("bitcoin.csv")
 pacman::p_load(tidyverse)
 
 # define zero matrices
-exp_value <- matrix(0, nrow = length(gold$Value), ncol = 1)
+exp_value <- matrix(0, nrow = length(bitcoin$Value), ncol = 1)
 
-sd <- matrix(0, nrow = length(gold$Value), ncol = 1)
+sd <- matrix(0, nrow = length(bitcoin$Value), ncol = 1)
 
 # finding running mean and standard deviation
 for (i in 1:length(bitcoin$Value)){
