@@ -71,7 +71,6 @@ bitcoin <- data.frame(bitcoin, exp_value, sd)
 
 # define zero matrices
 exp_perc_change <- matrix(0, nrow = length(gold$Value), ncol = 1)
-
 diff <- matrix(0, nrow = length(gold$Value), ncol = 1)
 perc_diff <- matrix(0, nrow = length(gold$Value), ncol = 1)
 
@@ -83,7 +82,6 @@ for (i in 3:length(gold$Value)-1){
     diff[i+1] <- (gold[i+1,2] - x)
     perc_diff[i+1] <- (gold[i+1,2]-x)/x
   }
-  
 }
 
 gold <- data.frame(gold, diff, perc_diff)
@@ -141,15 +139,29 @@ mu <- (gold[30,7] +1)^252-1
 sigma <- gold[30,8] * sqrt(252)
 S0 <- gold[30,2]
 gbm <- gbm_loop(nsim, t, mu, sigma, S0)
+
+# PLOT GBM vs ACTUAL VALUES
 gbm_df <- as.data.frame(gbm) %>%
-  mutate(ix = 1:nrow(gbm)) %>%
-  pivot_longer(-ix, names_to = 'sim', values_to = 'price')
+  mutate(day = 1:nrow(gbm) + 30) %>%
+  pivot_longer(-day, names_to = 'sim', values_to = 'predicted')
 gbm_df <- data.frame(gbm_df, actual=gold$Value[30:59])
-gbm_df %>%
-  ggplot(aes(x=ix)) +
-  geom_line(aes(y =price)) +
-  geom_line(aes(y =actual)) +
-  theme(legend.position = 'none')
+gbm_df <- gbm_df %>% 
+  select(day, predicted, actual) %>%
+  gather(key = "variable", value = "value", -day)
+ggplot(gbm_df, aes(x = day, y = value)) + 
+  geom_line(aes(color = variable, linetype = variable)) + 
+  scale_color_manual(values = c("darkred", "steelblue"))+
+  theme(plot.title = element_text(size=12, face="bold", 
+                                  margin = margin(10, 0, 10, 0))) +
+  ggtitle("Brownian Motion Model for Gold Price for 30 days using previous 30 day data")
+  
+# gbm_df %>%
+#   ggplot(aes(x=ix)) +
+#   geom_line(aes(y =price) , color = 'red') +
+#   geom_line(aes(y =actual), color = 'blue') +
+#   theme(legend.position = 'left')
+
+
 
 # plot(gbm_df$ix, gbm_df$price, type = 'l', col = 'red')
 # lines(df$x, df$y, col = "blue")

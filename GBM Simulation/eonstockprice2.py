@@ -27,7 +27,20 @@ T = n_of_wkdays
 N = T / dt
 t = np.arange(1, int(N) + 1)
 
+# returns
 returns = (S_eon.loc[1:, 'Close'] - \
           S_eon.shift(1).loc[1:, 'Close']) / \
           S_eon.shift(1).loc[1:, 'Close']
-print(returns.tolist())
+# print(returns.tolist())
+
+# mean and sd
+mu = np.mean(returns)
+sigma = np.std(returns)
+
+# random shocks array b
+scen_size = 2
+b = {str(scen): np.random.normal(0, 1, int(N)) for scen in range(1, scen_size + 1)}
+
+# Brownian Path W
+W = {str(scen): b[str(scen)].cumsum() for scen in range(1, scen_size + 1)}
+
