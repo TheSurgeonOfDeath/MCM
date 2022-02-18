@@ -5,4 +5,4 @@ gold_clean = clean_gold_data(gold);
 
 % write data
 writetable(bitcoin, "bitcoin.csv");
-writetable(bitcoin, "gold_clean.csv");
+writetable(gold_clean, "gold.csv");
