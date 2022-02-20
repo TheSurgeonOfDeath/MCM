@@ -1,30 +1,32 @@
 % read data
+bitcoin_path = import_file_as_matrix("bitcoin_path.csv");
 gold_path = import_file_as_matrix("gold_path.csv");
-% prev_days = gold_path(:,4) - gold_path(:,1);
-% prev_days(length(prev_days)-30:end) = 30;
-drift = gold_path(:,2);
+gold = readtable(pwd + "/../gold.csv");
 
-% time_period = 30 days
-time_period = gold_path(length(gold_path)/2,4) - gold_path(length(gold_path)/2,1);
+% Asset scores
+[Sb, db_rate] = Asset_score(bitcoin_path);
+[Sg, dg_rate] = Asset_score(gold_path);
 
-% drift rate
-drift_rate = zeros(2, length(drift));
-drift_rate(1) = 0;
-
-for i = 2:length(drift_rate)
-%     if i < time_period
-%         num_pts = i;
-%     else
-%         num_pts = time_period;
-%     end
-    
-%     drift_rate(i) = First_deriv_back_FD(drift(i-num_pts+1:i), 1);
-    
-    % first order
-    drift_rate(1,i) = First_deriv_back_FD(drift(i-1:i), 1);
-    % second order
-    drift_rate(2,i) = First_deriv_back_FD(drift(max(i-2,1):i), 1);
+% add nans for market closed
+Sg = [0, 0, Sg, 0]; % add first two and last 2 points
+for i = 1:height(gold)
+    % use cleaned gold data as reference for closed market
+    if isnan(table2array(gold(i,2)))
+        Sg = [Sg(1:i-1), nan, Sg(i:end)];
+    end
 end
+Sg = Sg(3:end-1);
+Sg(1) = nan;
 
-% score with first order FD
-S = abs(drift) .* drift_rate(1, :);
+% Normalised bitcoin
+
+
+% Cash score
+Sc = -2 .* Sg .* Sb / (Sg + Sb);
+
+
+% Normalised scores
+% S = [Sc, Sg, Sb];
+% N = Normalised_score(S);
+
+% Optimal holding proportion

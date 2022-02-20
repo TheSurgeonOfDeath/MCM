@@ -1,0 +1,7 @@
+function N = Normalised_score(S)
+%NORMALISED SCORE N = 1/(1+exp(-S))
+
+for i = 
+N = 1/(1+exp(-S));
+end
+

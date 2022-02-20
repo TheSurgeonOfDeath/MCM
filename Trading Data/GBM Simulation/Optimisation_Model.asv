@@ -1,30 +1,34 @@
 % read data
+bitcoin_path = import_file_as_matrix("bitcoin_path.csv");
 gold_path = import_file_as_matrix("gold_path.csv");
-% prev_days = gold_path(:,4) - gold_path(:,1);
-% prev_days(length(prev_days)-30:end) = 30;
-drift = gold_path(:,2);
+gold = readtable("p/../gold.csv");
 
-% time_period = 30 days
-time_period = gold_path(length(gold_path)/2,4) - gold_path(length(gold_path)/2,1);
-
-% drift rate
-drift_rate = zeros(size(drift));
-drift_rate(1) = nan;
-drift_rate_first = drift_rate;
-drift_rate_sec = drift_rate;
-
-for i = 2:length(drift_rate)
-    if i < time_period
-        num_pts = i;
-    else
-        num_pts = time_period;
-    end
+% Asset scores
+[Sb, db_rate] = Asset_score(bitcoin_path);
+[Sg, dg_rate] = Asset_score(gold_path);
+for i = length(Sg):-1:1
     
-%     drift_rate(i) = First_deriv_back_FD(drift(i-num_pts+1:i), 1);
-    
-    drift_rate_first(i) = First_deriv_back_FD(drift(i-1:i), 1);
-    drift_rate_sec(i) = First_deriv_back_FD(drift(min(i-2,1):i), 1);
 end
 
-% score
-S = drift .* drift_rate;
+% Plot dg_rates for FD_Orders
+hold on;
+for i = 1:height(dg_rate)
+%     figure;
+    plot(dg_rate(i,:));
+    legend; 
+end
+hold off;
+
+
+% Cash score
+Sc = -2 .* Sg .* Sb / (Sg + Sb);
+
+
+% Normalised scores
+S = [Sc, Sg, Sb];
+N = zeros(size(S));
+for i = 1:length(S)
+    N(i) = Normalised_score(S(i));
+end
+
+% Optimal holding proportion
