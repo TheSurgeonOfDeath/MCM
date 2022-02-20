@@ -1,5 +1,6 @@
 #Load data
 gold <- read.csv("gold_raw.csv")
+source("Brownian_Motion_Function.R")
 
 # Call Data Handling Function ------------------------------------------------------
 

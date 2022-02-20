@@ -95,7 +95,7 @@ gbm_price_pred <- function(data, nsim = 100, t = 25, exp_perc = 0, sd_perc = 0.1
   gbm <- matrix(ncol = nsim, nrow = t)
   # reciprocal of the number of trading days
   dt <- 1/td
-  # caluclate the predicted price for future days
+  # calculate the predicted price for future days
   for (i in 1:nsim) {
     gbm[1, i] <- S0
     for (day in 2:t) {
