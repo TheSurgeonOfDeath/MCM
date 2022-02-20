@@ -84,15 +84,19 @@ summary <- summary_data(gold)
 
 # Price Predictions GBM -------------------------------------------------------
 
-gbm_price_pred <- function(data, nsim = 100, t = 25, exp_perc = 0, sd_perc = 0.1, S0 = 100, td = 252, previous_data = 10) {
+gbm_price_pred <- function(data, nsim = 100, t = 25, S0 = 100, td = 252, current_day = 10) {
   # adjustment for t ( code functionality )
   t <- t + 1
   
-  # runa <- data[1:i,6]
-  # 
-  # exp_perc_change [i,1] <- mean(runa, na.rm = TRUE)
-  # 
-  # sd_perc_change[i,1] <- sd(runa, na.rm = TRUE)
+  b <- current_day - t
+  if (b<1){
+    b = 1
+  }
+  runa <- data[b:current_day,6]
+  
+  exp_perc <- mean(runa, na.rm = TRUE)
+   
+  sd_perc <- sd(runa, na.rm = TRUE)
   # calculate drift
   mu <- (exp_perc +1)^td-1
   # calculate volatility
@@ -101,7 +105,7 @@ gbm_price_pred <- function(data, nsim = 100, t = 25, exp_perc = 0, sd_perc = 0.1
   gbm <- matrix(ncol = nsim, nrow = t)
   # reciprocal of the number of trading days
   dt <- 1/td
-  # calculate the predicted price for future days
+  # caluclate the predicted price for future days
   for (i in 1:nsim) {
     gbm[1, i] <- S0
     for (day in 2:t) {
@@ -119,10 +123,10 @@ gbm_price_pred <- function(data, nsim = 100, t = 25, exp_perc = 0, sd_perc = 0.1
   # gbm_df <- gbm_df %>% rename (predicted = V1)
   
   gbm_df <- as.data.frame(gbm) %>%
-    mutate(day = 1:nrow(gbm) + previous_data -1) %>%
+    mutate(day = 1:nrow(gbm) + current_day -1) %>%
     pivot_longer(-day, names_to = 'sim', values_to = 'predicted')
-  end <- previous_data + t - 1
-  gbm_df <- data.frame(gbm_df, actual=data$Value[previous_data:end])
+  end <- current_day + t - 1
+  gbm_df <- data.frame(gbm_df, actual=data$Value[current_day:end])
   gbm_df <- gbm_df %>% 
     select(day, predicted, actual) %>%
     gather(key = "variable", value = "value", -day)
@@ -134,7 +138,7 @@ gbm_price_pred <- function(data, nsim = 100, t = 25, exp_perc = 0, sd_perc = 0.1
 
 # Call Price Predictions GBM Function --------------------------------------------------
 
-gbm_df <- gbm_price_pred(summary, 1, 30, summary$exp_perc_change[30], summary$sd_perc_change[30], summary$Value[30], 252, 30)
+gbm_df <- gbm_price_pred(summary, 1, 30, summary$Value[125], 252, 125)
 
 
 
