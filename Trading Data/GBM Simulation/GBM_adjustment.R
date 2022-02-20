@@ -1,6 +1,6 @@
+pacman::p_load(tidyr, tidyverse)
 
 gold <- read.csv("gold_raw.csv")
-
 
 
 # Data Handling Function --------------------------------------------------
@@ -105,43 +105,99 @@ gbm_price_pred <- function(data, nsim = 100, t = 25, S0 = 100, td = 252, current
   gbm <- matrix(ncol = nsim, nrow = t)
   # reciprocal of the number of trading days
   dt <- 1/td
-  # caluclate the predicted price for future days
+  # calculate the predicted price for future days
+  set.seed(100)
+  e_vec <- rnorm(nsim)
   for (i in 1:nsim) {
     gbm[1, i] <- S0
     for (day in 2:t) {
-      e <- rnorm(1)
+      e <- e_vec[i]
       gbm[day, i] <- gbm[(day-1), i] * exp((mu - sigma * sigma / 2) * dt + sigma * e * sqrt(dt))
     }
   }
   
-  # gbm_df <- as.data.frame(gbm)
-  # days <- 1:nrow(gbm) + previous_data -1
-  # gbm_df <- data.frame(days, gbm_df)
-  # end <- previous_data + t - 1
-  # gbm_df <- data.frame(gbm_df, actual=summary$Value[previous_data:end])
-  # 
-  # gbm_df <- gbm_df %>% rename (predicted = V1)
+  gbm_df <- as.data.frame(gbm)
   
-  gbm_df <- as.data.frame(gbm) %>%
-    mutate(day = 1:nrow(gbm) + current_day -1) %>%
-    pivot_longer(-day, names_to = 'sim', values_to = 'predicted')
+  avg <- matrix(0, nrow = dim(gbm_df)[1], ncol = 1)
+  
+  avg <- data.frame(avg)
+
+  for (i  in 1:dim(gbm_df)[1]){
+
+    run <- gbm_df[i,1:dim(gbm_df)[2]]
+    sum <- 0
+    for (j in 1:length(run)){
+      sum <- sum + run[j]
+    }
+
+    avg[i,1] <- sum/length(run)
+  }
+  
+  days <- 1:nrow(gbm) + current_day -1
+  gbm_df <- data.frame(days, gbm_df, avg)
   end <- current_day + t - 1
-  gbm_df <- data.frame(gbm_df, actual=data$Value[current_day:end])
-  gbm_df <- gbm_df %>% 
-    select(day, predicted, actual) %>%
-    gather(key = "variable", value = "value", -day)
+  gbm_df <- data.frame(gbm_df, actual=summary$Value[current_day:end])
   
-  return(gbm_df)
+  # gbm_df <- as.data.frame(gbm) %>%
+  #   mutate(day = 1:nrow(gbm) + current_day -1) %>%
+  #   pivot_longer(-day, names_to = 'sim', values_to = 'predicted')
+  # end <- current_day + t - 1
+  # gbm_df <- data.frame(gbm_df, actual=data$Value[current_day:end])
+  # gbm_df <- gbm_df %>% 
+  #   select(day, predicted, actual) %>%
+  #   gather(key = "variable", value = "value", -day)
+  
+  # returning drift and final price
+  drift <- mu
+  
+  final_price <- gbm_df$avg[dim(gbm_df)[1]]
+  
+  final_outputs <- data.frame(drift, final_price)
+  
+  return(final_outputs)
 }
 
 
 
 # Call Price Predictions GBM Function --------------------------------------------------
 
-gbm_df <- gbm_price_pred(summary, 1, 30, summary$Value[125], 252, 125)
+gbm_df <- gbm_price_pred(summary, 100, 30, summary$Value[125], 252, 125)
 
+final <- gbm_price_pred(summary, 100, 3, summary$Value[3], 252, 3)
 
+for (i in 5:length(summary$Value)-1){
+  if (i<30){
+    j <- i
+  }else if (i>length(summary$Value)-30){
+    j<- length(summary$Value)-i
+  }else{
+    j <- 30
+  }
+  gbm_df <- gbm_price_pred(summary, 100, j, summary$Value[i], 252, i)
+  
+  final <- rbind(final, gbm_df)
+}
 
+present_day <- days <- 1:dim(final)[1] + 2
+x <- data.frame(present_day, final)
+
+future_day <- matrix(NA, nrow = dim(final)[1], ncol = 1)
+  
+for (i in 4:length(summary$Value)-1){
+  if (i<30){
+    j <- i
+  }else if (i>length(summary$Value)-30){
+    j<- length(summary$Value)-i
+  }else{
+    j <- 30
+  }
+  
+  future_day[i-2,1] <- i+j
+}
+
+x <- data.frame(x, future_day)
+
+write.csv(x,"gold_path.csv", row.names = FALSE)
 
 # Graph Data --------------------------------------------------------------
 
@@ -151,4 +207,3 @@ ggplot(gbm_df, aes(x = day, y = value)) +
   theme(plot.title = element_text(size=12, face="bold", 
                                   margin = margin(10, 0, 10, 0))) +
   ggtitle("Brownian Motion Model for Gold Price for 30 days using previous 30 day data")
-
