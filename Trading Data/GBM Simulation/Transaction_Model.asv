@@ -157,21 +157,24 @@ disp(diff);
 disp(diff2);
 
 % Plots
-figure;
-hold on;
-plot(priceB_fut)
-plot(priceB_cur)
-legend;
-hold off;
+% figure;
+% hold on;
+% plot(priceB_fut)
+% plot(priceB_cur)
+% ylim([min(priceB_cur) * 0.9, max(priceB_cur) * 1.1]);
+% legend;
+% hold off;
+% 
+% figure;
+% hold on;
+% plot(priceG_fut)
+% plot(priceG_cur)
+% legend;
+% hold off;
 
 figure;
 hold on;
-plot(priceG_fut)
-plot(priceG_cur)
-legend;
-hold off;
-
-figure;
 V = sum(F,2);
 plot(V);
+hold off;
 

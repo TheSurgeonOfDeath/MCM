@@ -157,21 +157,33 @@ disp(diff);
 disp(diff2);
 
 % Plots
-figure;
-hold on;
-plot(priceB_fut)
-plot(priceB_cur)
-legend;
-hold off;
+% figure;
+% hold on;
+% plot(priceB_fut)
+% plot(priceB_cur)
+% ylim([min(priceB_cur) * 0.9, max(priceB_cur) * 1.1]);
+% legend;
+% hold off;
+% 
+% figure;
+% hold on;
+% plot(priceG_fut)
+% plot(priceG_cur)
+% legend;
+% hold off;
 
 figure;
 hold on;
-plot(priceG_fut)
-plot(priceG_cur)
-legend;
-hold off;
-
-figure;
 V = sum(F,2);
 plot(V);
+title("Portfolio Value on each Trading Day Using the Portfolio Rebalancing Model")
+xlabel("Trading Day")
+ylabel("Portfolio Value ($)")
+
+% % Save plot
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 23 10]);
+set(gcf, 'PaperSize', [23 10]);
+print('Portfolio Value per day.pdf', '-dpdf')
+hold off;
 
