@@ -43,8 +43,8 @@ priceG_fut = [priceG_cur(1:2); priceG_fut];
 [priceG_fut, priceB_fut] = Correct_price_dimensions(priceG_fut,priceB_fut);
 
 % Remove infinity
-% priceB_fut = Remove_extremes(priceB_fut, 2);
-% priceG_fut = Remove_extremes(priceG_fut, 2);
+priceB_fut = Remove_extremes(priceB_fut, 2);
+priceG_fut = Remove_extremes(priceG_fut, 2);
 for i = 1:length(priceG_fut)
     if isnan(priceG_fut(i))
         priceG_fut(i) = priceG_fut(i-1);
