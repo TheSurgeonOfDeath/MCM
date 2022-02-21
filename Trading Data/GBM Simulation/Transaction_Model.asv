@@ -61,8 +61,8 @@ A_amount = zeros(size(P_opt));
 
 % Investment on Day 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % P_invest = P_init; % [1, 0, 0] no blind investment
-% P_invest = [0, 0.5, 0.5]; % 2 way split
-P_invest = [1/3, 1/3, 1/3]; % 3 way split
+P_invest = [0, 0.5, 0.5]; % 2 way split
+% P_invest = [1/3, 1/3, 1/3]; % 3 way split
 F_invest = P_invest .* sum(F_init);
 F(1,:) = F_invest;
 A_amount(1,:) = F_invest ./ A_price_cur(1,:);
@@ -85,7 +85,6 @@ epsilon = 0;
 
 % Transactions
 Ac = zeros(size(P_opt));
-num_trans = 0;
 % [C, G, B]
 for i = 3:length(A_price_fut)
     % Funds today
@@ -117,7 +116,6 @@ for i = 3:length(A_price_fut)
     
     % Make transaction?
     if(Vf - Vc > (1+epsilon)*feeTot)
-        num_trans = num_trans + 1;
         P_cur(i,:) = P_opt(i,:);
         % new funds today after transaction
         F(i,:) = F(i,:) ./ (sum(F(i,:)) - feeTot) .* P_opt(i,:);
@@ -134,12 +132,9 @@ F_final = A_amount(end,:) .* A_price_cur(end, :);
 V_final = sum(F_final);
 
 % Comparison by investing all in bitcoin
-b_price = table2array(bitcoin(:,2));
-b_amount_init = 1000 / b_price(1);
-b_peak_price = max(b_price);
-b_value_end = b_amount_init * b_peak_price;
+b
 
-diff =  V_final - b_value_end;
+
 
 
 
