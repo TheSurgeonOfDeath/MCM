@@ -6,8 +6,8 @@ V_init = sum(F_init);
 % Day 4 model starts
 
 % read data
-bitcoin_path = import_file_as_matrix("bitcoin_path_noinf_2.csv");
-gold_path = import_file_as_matrix("gold_path.csv");
+bitcoin_path = import_file_as_matrix(pwd + "/Final/bitcoin_monthly_annualised.csv");
+gold_path = import_file_as_matrix(pwd + "/Final/gold_monthly_annualised.csv");
 gold = readtable(pwd + "/../gold.csv");
 bitcoin = readtable(pwd + "/../bitcoin.csv");
 
@@ -15,7 +15,7 @@ bitcoin = readtable(pwd + "/../bitcoin.csv");
 [Sg, Sb] = Prelim_scores(gold_path, gold, bitcoin_path);
 
 % Optimal proportions
-% [Pc, Pg, Pb] = Optimal_Proportions(Sg, Sb);
+[Pc, Pg, Pb] = Optimal_Proportions(Sg, Sb);
 P_opt = [Pc, Pg, Pb];
 P_opt = [zeros(2,3); P_opt]; % model starts at day 4
 
@@ -39,8 +39,6 @@ priceG_fut = gold_path(:,3);
 % for first 3 days.
 priceB_fut = [priceB_cur(1:2); priceB_fut]; 
 priceG_fut = [priceG_cur(1:2); priceG_fut];
-
-% Clean future prices
 [priceG_fut, priceB_fut] = Correct_price_dimensions(priceG_fut,priceB_fut);
 for i = 1:length(priceB_fut)
     % when predicted price is infinity
@@ -56,8 +54,6 @@ F = zeros(size(P_opt));
 
 % Asset amounts
 A_amount = zeros(size(P_opt));
-
-
 
 % Investment on Day 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % P_invest = P_init; % [1, 0, 0] no blind investment
@@ -106,10 +102,10 @@ for i = 3:length(A_price_fut)
     Vc_after = Vc_before - feeTot;
     
     % asset amounts after transaction
-    A_after = P_opt(i, :) .* Vc_after;
+    A_amount_after = P_opt(i, :) .* Vc_after;
     
     % asset value in future
-    A_val_fut = A_after ./ A_price_fut(i,:);
+    A_val_fut = A_amount_after .* A_price_fut(i,:);
     
     % Portfolio value (current and future)
     Vc = Vc_before;
@@ -120,7 +116,7 @@ for i = 3:length(A_price_fut)
         num_trans = num_trans + 1;
         P_cur(i,:) = P_opt(i,:);
         % new funds today after transaction
-        F(i,:) = F(i,:) ./ (sum(F(i,:)) - feeTot) .* P_opt(i,:);
+        F(i,:) = Vc_after .* P_opt(i,:);
         A_amount(i,:) = F(i,:) ./ A_price_cur(i,:);
     else
 %         P_cur(i,:) = P_cur(i,:); % 
