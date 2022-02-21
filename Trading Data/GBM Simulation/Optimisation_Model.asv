@@ -1,0 +1,34 @@
+% read data
+bitcoin_path = import_file_as_matrix("bitcoin_path.csv");
+gold_path = import_file_as_matrix("gold_path.csv");
+gold = readtable("p/../gold.csv");
+
+% Asset scores
+[Sb, db_rate] = Asset_score(bitcoin_path);
+[Sg, dg_rate] = Asset_score(gold_path);
+for i = length(Sg):-1:1
+    
+end
+
+% Plot dg_rates for FD_Orders
+hold on;
+for i = 1:height(dg_rate)
+%     figure;
+    plot(dg_rate(i,:));
+    legend; 
+end
+hold off;
+
+
+% Cash score
+Sc = -2 .* Sg .* Sb / (Sg + Sb);
+
+
+% Normalised scores
+S = [Sc, Sg, Sb];
+N = zeros(size(S));
+for i = 1:length(S)
+    N(i) = Normalised_score(S(i));
+end
+
+% Optimal holding proportion
