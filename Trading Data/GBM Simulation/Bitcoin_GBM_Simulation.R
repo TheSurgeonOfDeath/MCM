@@ -1,5 +1,6 @@
 #Load data
 bitcoin <- read.csv("bitcoin.csv")
+source("Brownian_Motion_Function.R")
 
 # Call Data Handling Function ------------------------------------------------------
 

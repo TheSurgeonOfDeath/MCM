@@ -1,10 +1,5 @@
-function [Sg, Sb] = Prepare_data()
-%PREPARE_DATA Prepare data to find optimal proportions
-% read data
-
-bitcoin_path = import_file_as_matrix("bitcoin_path.csv");
-gold_path = import_file_as_matrix("gold_path.csv");
-gold = readtable(pwd + "/../gold.csv");
+function [Sg, Sb] = Prelim_scores(gold_path, gold, bitcoin_path)
+%PRELIM_SCORES Preliminary scores for gold and bitcoin
 
 % Asset scores
 [Sb, ~] = Asset_score(bitcoin_path);
@@ -23,6 +18,5 @@ Sg = Sg(3:end-1);
 % Can't calculate proportions on first day because Sg is nan
 Sg = Sg(2:end);
 Sb = Sb(2:end);
-
 end
 

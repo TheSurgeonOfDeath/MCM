@@ -1,5 +1,9 @@
+function [Pc, Pg, Pb] = Optimal_Proportions(Sg, Sb)
 % Prepare data
-[Sg, Sb, Nb] = Prepare_data();
+% [Sg, Sb] = Prepare_data();
+
+% Normalised bitcoin score (independent of Sg)
+Nb = Normalised_score(Sb);
 
 % Calculate Optimal Proportions
 Ng = zeros(size(Sg));
@@ -26,12 +30,11 @@ for i = 1:length(Sg)
         % guess new score is close to old score.
         disp(i)
         epsilon = max(Sg) - min(Sg);
-        Sg(i) = Sg_numerical(Pg(i), Sb(i), Sg(j), epsilon);
-%         Sg_numeric = Sg_numerical(Pg(i), Sb(i), Sg(j), epsilon); 
-%         if isempty(Sg_numeric)
-%             
-%         end
-        
+        Sg_guess = Sg(j);
+        if abs(Sg(j)) < 1E-7
+            Sg_guess = 1E-7;
+        end
+        Sg(i) = Sg_numerical(Pg(i), Sb(i), Sg_guess, epsilon);
     end
     
     % cash score
@@ -46,4 +49,5 @@ for i = 1:length(Sg)
     Pg(i) = Ng(i) / scoreSum;
     Pb(i) = Nb(i) / scoreSum;
     Pc(i) = Nc(i) / scoreSum;
+end
 end

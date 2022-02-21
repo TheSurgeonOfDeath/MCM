@@ -19,6 +19,6 @@ for i = 2:length(drift_rate)
 end
 
 % score with first order FD
-S = abs(drift)' .* drift_rate(1, :);
+S = abs(drift) .* drift_rate(1, :)';
 end
 

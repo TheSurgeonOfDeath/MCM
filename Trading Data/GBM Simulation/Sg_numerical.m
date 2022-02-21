@@ -27,24 +27,22 @@ eqnRight = Ng/(Ng + Nb + Nc);
 % fplot([eqnLeft eqnRight], [-200 200])
 % title([texlabel(eqnLeft) ' = ' texlabel(eqnRight)])
 
-Sg = goal_seek(@prop_calc,Sg_guess, Sb, Pf);
+% Sg = goal_seek(@prop_calc,Sg_guess, Sb, Pf);
+Sg = vpasolve(eqnLeft == eqnRight, x, [Sg_guess - epsilon, Sg_guess + epsilon]);
 
 % In case goal_seek doesn't work
 if isempty(Sg)
-    Sg = vpasolve(eqnLeft == eqnRight, x, [Sg_guess- epsilon, Sg_guess + epsilon]); 
+    Sg = solve(eqnLeft == eqnRight, x);
     if isempty(Sg)
-        Sg = solve(eqnLeft == eqnRight, x);
+        Sg = vpasolve(eqnLeft == eqnRight, x, Sg_guess);
         if isempty(Sg)
-            Sg = vpasolve(eqnLeft == eqnRight, x, Sg_guess);
+            Sg = vpasolve(eqnLeft == eqnRight, x, [Sg_guess- epsilon, Sg_guess + epsilon], 'Random',true);
             if isempty(Sg)
-                Sg = vpasolve(eqnLeft == eqnRight, x, [Sg_guess- epsilon, Sg_guess + epsilon], 'Random',true);
+                Sg = vpasolve(eqnLeft == eqnRight, x, 'Random',true);
                 if isempty(Sg)
-                    Sg = vpasolve(eqnLeft == eqnRight, x, 'Random',true);
+                    Sg = vpasolve(eqnLeft == eqnRight, x, [Sg_guess - 10*epsilon, Sg_guess + 10*epsilon]);
                     if isempty(Sg)
-                        Sg = vpasolve(eqnLeft == eqnRight, x);
-                        if isempty(Sg)
-                            Sg = goal_seek(@prop_calc,Sg_guess, Sb, Pf);
-                        end
+                        Sg = goal_seek(@prop_calc,Sg_guess, Sb, Pf);
                     end
                 end
             end
