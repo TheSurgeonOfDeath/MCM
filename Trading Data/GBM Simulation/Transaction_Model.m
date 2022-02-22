@@ -64,9 +64,9 @@ A_amount = zeros(size(P_opt));
 
 
 % Investment on Day 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-P_invest = P_init; % [1, 0, 0] no blind investment
+% P_invest = P_init; % [1, 0, 0] no blind investment
 % P_invest = [0, 0.5, 0.5]; % 2 way split
-% P_invest = [1/3, 1/3, 1/3]; % 3 way split
+P_invest = [1/3, 1/3, 1/3]; % 3 way split
 F_invest = P_invest .* sum(F_init);
 F(1,:) = F_invest;
 A_amount(1,:) = F_invest ./ A_price_cur(1,:);
@@ -175,15 +175,18 @@ disp(diff2);
 figure;
 hold on;
 V = sum(F,2);
-plot(V);
-title("Portfolio Value on each Trading Day Using the Portfolio Rebalancing Model")
+plot(V, 'DisplayName', 'Portfolio');
+% plot(priceG_cur, 'DisplayName', 'Gold')
+plot(priceB_cur, 'DisplayName', 'Bitcoin')
+title("Gold Value per Trading Day")
 xlabel("Trading Day")
-ylabel("Portfolio Value ($)")
+ylabel("Value ($)")
+% legend;
 
 % % Save plot
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperPosition', [0 0 23 10]);
 set(gcf, 'PaperSize', [23 10]);
-print('Portfolio Value per day.pdf', '-dpdf')
+% print('Gold Value per day.pdf', '-dpdf')
 hold off;
 

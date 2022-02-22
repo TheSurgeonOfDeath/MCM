@@ -144,7 +144,7 @@ V_final = sum(F_final);
 disp(V_final);
 
 % Comparison by investing all in bitcoin
-b_price = table2array(bitcoin(:,2));
+b_price = table2array(gold(:,2));
 b_amount_init = 1000 / b_price(1);
 b_peak_price = max(b_price);
 b_end_price = b_price(end);
@@ -175,6 +175,18 @@ disp(diff2);
 figure;
 hold on;
 V = sum(F,2);
-plot(V);
+plot(V, 'DisplayName', 'Portfolio');
+% plot(priceG_cur, 'DisplayName', 'Gold')
+% plot(priceB_cur, 'DisplayName', 'Bitcoin')
+title("Portfolio Value per Trading Day")
+xlabel("Trading Day")
+ylabel("Value ($)")
+% legend;
+
+% % Save plot
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 23 10]);
+set(gcf, 'PaperSize', [23 10]);
+print('Portfolio Value per day.pdf', '-dpdf')
 hold off;
 
